@@ -11,11 +11,25 @@ The repository contains two control paths:
 
 Requirements: Windows x64 and the .NET 10 SDK.
 
+Build all projects:
+
+```powershell
+.\build-all.ps1
+```
+
+Pass `-Clean` to clean the selected configuration before restoring and building:
+
+```powershell
+.\build-all.ps1 -Clean
+```
+
+Create the self-contained service package:
+
 ```powershell
 .\scripts\Publish-AcerControlService.ps1
 ```
 
-The script runs all tests and publishes a self-contained executable under `artifacts\publish\AcerControlService`.
+The publish script runs all tests and writes the executable to `artifacts\publish\AcerControlService`. This publish output must exist before installation; a normal build does not create it.
 
 ## Install
 
@@ -32,8 +46,12 @@ The installer:
 - Creates settings under `HKLM\SOFTWARE\AcerControl\Service`.
 - Registers `AcerControlService` as a delayed automatic `LocalSystem` service.
 - Configures service restart-on-failure actions.
+- Waits up to 60 seconds for the Acer firmware interface to become ready.
+- Sets fan mode to Auto when no managed fan preference already exists.
 
 The service listens only on `127.0.0.1:46934`. It creates no firewall rule and accepts no CORS/browser-origin requests.
+
+During installation, service health may briefly report `starting` with the message `Waiting for the Acer firmware interface.` Installation continues when `AcerGamingFunction` becomes available and fails if it is not ready within 60 seconds.
 
 ## Control
 
@@ -69,7 +87,9 @@ client.set_fan("custom", 50, 60)
 
 Only successfully applied and verified settings are persisted. Restoration order is profile, fans, then keyboard because profile changes reset fan behavior.
 
-On first installation, the service captures the current profile and a uniform static keyboard state. Fan mode remains unmanaged until explicitly set because firmware exposes fan targets but does not report whether Auto, Max, or Custom mode is active.
+See [REGISTRY.md](REGISTRY.md) for the complete key, value, type, permission, and removal reference.
+
+On first installation, the service captures the current profile and a uniform static keyboard state. If no managed fan preference exists, the installer applies and verifies Auto mode through the service API. The service then saves Auto as the desired fan mode in the registry for restoration at startup and resume. Existing managed fan preferences retained from an earlier installation are not overwritten.
 
 The service restores managed settings at startup and resume. It does not continuously overwrite changes made in NitroSense. Direct use of `acer-control.ps1` bypasses persistence and can cause temporary drift until the next restore or `settings apply` call.
 

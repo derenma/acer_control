@@ -22,7 +22,7 @@ Names referenced by this project include:
 | Acer Incorporated | Acer QuickPanel and Acer Purified Voice | Acer applications detected during system analysis |
 | Acer Incorporated | AcerAgentService, AcerGamingFunction, and other Acer service/interface identifiers | Technical identifiers used for compatibility and analysis |
 
-No ownership is claimed in these names, Acer binaries, Acer firmware interfaces, or Acer documentation. The project name "Acer Control" is descriptive of compatibility and does not imply that Acer published or approved it.
+No ownership is claimed in these names, Acer binaries, Acer firmware interfaces, or Acer documentation. The project name "Acer Control" is derived from the function of the application itself: controlling supported features on compatible Acer hardware. As explained in the U.S. Copyright Office's [Circular 33, *Works Not Protected by Copyright*](https://www.copyright.gov/circs/circ33.pdf), names, titles, and short phrases are not protected by copyright. This naming explanation does not claim ownership of Acer's trademarks or imply that Acer published or approved the project.
 
 ## Microsoft
 

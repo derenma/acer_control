@@ -18,6 +18,9 @@ $serviceName = 'AcerControlService'
 $installPath = Join-Path $env:ProgramFiles 'AcerControl'
 $dataPath = Join-Path $env:ProgramData 'AcerControl'
 $tokenPath = Join-Path $dataPath 'api-token'
+if (-not (Test-Path -LiteralPath $PublishPath -PathType Container)) {
+    throw "Publish output was not found at '$PublishPath'. Run .\scripts\Publish-AcerControlService.ps1 first."
+}
 $sourcePath = (Resolve-Path -LiteralPath $PublishPath).Path
 $sourceExecutable = Join-Path $sourcePath 'AcerControlService.exe'
 if (-not (Test-Path -LiteralPath $sourceExecutable -PathType Leaf)) {
@@ -145,19 +148,19 @@ $executablePath = Join-Path $installPath 'AcerControlService.exe'
 if ($null -eq $existingService) {
     Invoke-Sc @(
         'create', $serviceName,
-        "binPath= `"$executablePath`"",
-        'start= delayed-auto',
-        'obj= LocalSystem',
-        'DisplayName= Acer Control Service'
+        'binPath=', "`"$executablePath`"",
+        'start=', 'delayed-auto',
+        'obj=', 'LocalSystem',
+        'DisplayName=', 'Acer Control Service'
     )
 }
 else {
     Invoke-Sc @(
         'config', $serviceName,
-        "binPath= `"$executablePath`"",
-        'start= delayed-auto',
-        'obj= LocalSystem',
-        'DisplayName= Acer Control Service'
+        'binPath=', "`"$executablePath`"",
+        'start=', 'delayed-auto',
+        'obj=', 'LocalSystem',
+        'DisplayName=', 'Acer Control Service'
     )
 }
 
@@ -167,8 +170,8 @@ Invoke-Sc @(
 )
 Invoke-Sc @(
     'failure', $serviceName,
-    'reset= 86400',
-    'actions= restart/5000/restart/15000/restart/60000'
+    'reset=', '86400',
+    'actions=', 'restart/5000/restart/15000/restart/60000'
 )
 Invoke-Sc @('failureflag', $serviceName, '1')
 
@@ -177,24 +180,52 @@ $service = Get-Service -Name $serviceName
 $service.WaitForStatus('Running', [TimeSpan]::FromSeconds(30))
 
 $port = (Get-ItemProperty 'HKLM:\SOFTWARE\AcerControl\Service').ApiPort
-$deadline = [DateTime]::UtcNow.AddSeconds(30)
+$deadline = [DateTime]::UtcNow.AddSeconds(60)
+$health = $null
 do {
     try {
         $health = Invoke-RestMethod `
             -Uri "http://127.0.0.1:$port/healthz" `
             -Method Get `
             -TimeoutSec 2
-        break
     }
     catch {
-        if ([DateTime]::UtcNow -ge $deadline) {
-            throw 'The service started, but its health endpoint did not become available.'
-        }
-        Start-Sleep -Milliseconds 500
+        $health = $null
     }
+
+    if ($null -ne $health -and $health.status -eq 'healthy') {
+        break
+    }
+    if ([DateTime]::UtcNow -ge $deadline) {
+        $lastStatus = if ($null -eq $health) {
+            'The health endpoint was unavailable.'
+        }
+        else {
+            "Last health status: $($health.status). $($health.message)"
+        }
+        throw "The service started, but the Acer firmware interface was not ready within 60 seconds. $lastStatus"
+    }
+
+    Start-Sleep -Milliseconds 500
 } while ($true)
 
-Write-Host "Acer Control Service installed and running. Health: $($health.status)"
-if ($health.message) {
-    Write-Warning $health.message
+$token = [IO.File]::ReadAllText($tokenPath).Trim()
+$headers = @{ Authorization = "Bearer $token" }
+$fan = Invoke-RestMethod `
+    -Uri "http://127.0.0.1:$port/api/v1/fan" `
+    -Method Get `
+    -Headers $headers
+if ($null -eq $fan.mode) {
+    Invoke-RestMethod `
+        -Uri "http://127.0.0.1:$port/api/v1/fan" `
+        -Method Put `
+        -Headers $headers `
+        -ContentType 'application/json' `
+        -Body '{"mode":"auto"}' | Out-Null
+    Write-Host 'Default fan mode set to Auto. This preference was saved to the registry and will be restored at startup and resume.'
 }
+else {
+    Write-Host 'Existing managed fan preference retained from the registry.'
+}
+
+Write-Host "Acer Control Service installed and running. Health: $($health.status)"

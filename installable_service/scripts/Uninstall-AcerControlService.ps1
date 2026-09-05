@@ -1,6 +1,26 @@
 #Requires -RunAsAdministrator
 
 <#
+.SYNOPSIS
+Uninstalls the Acer Control Windows service.
+
+.DESCRIPTION
+Stops and removes AcerControlService, its installed binaries, and its shared API token. Desired settings remain in the registry by default so they are available after reinstalling.
+
+.PARAMETER Purge
+Also removes all Acer Control service configuration and desired settings under HKLM\SOFTWARE\AcerControl. Use this option when no settings should be retained for a future installation.
+
+.EXAMPLE
+.\Uninstall-AcerControlService.ps1
+
+Uninstalls the service while retaining desired registry settings.
+
+.EXAMPLE
+.\Uninstall-AcerControlService.ps1 -Purge
+
+Uninstalls the service and removes all retained registry settings.
+
+.NOTES
 PowerShell compatibility:
 - Windows PowerShell 5.1: Supported on Windows.
 - PowerShell 7.x: Supported on Windows.

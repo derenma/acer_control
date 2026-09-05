@@ -14,6 +14,15 @@ through an installable local service.
 This is an independent project and is not affiliated with or endorsed by Acer.
 See [MANUFACTURER.md](MANUFACTURER.md) for attribution details.
 
+## Compatibility
+
+Tested and built on: Acer AN17-42
+
+General compatability with other Acer hardware is unknown as these tools were
+built and run on personal equipment with other OS customizations. Github issue
+submissions are encouraged. Pull-requests for other Acer hardware compatability
+tweaks are also encouraged.
+
 ## Choose a Tool
 
 | Path | Purpose | Main requirement |

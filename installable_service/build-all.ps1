@@ -6,7 +6,9 @@ PowerShell compatibility:
 
 param(
     [ValidateSet('Debug', 'Release')]
-    [string]$Configuration = 'Release'
+    [string]$Configuration = 'Release',
+
+    [switch]$Clean
 )
 
 $ErrorActionPreference = 'Stop'
@@ -49,6 +51,15 @@ if ($dotnetInfo -notmatch '(?im)^\s*Architecture:\s*x64\s*$') {
 }
 
 Write-Host 'Build prerequisites satisfied: Windows x64, supported PowerShell, and .NET 10 SDK x64.'
+
+if ($Clean) {
+    dotnet clean `
+        $solutionPath `
+        --configuration $Configuration
+    if ($LASTEXITCODE -ne 0) {
+        throw "dotnet clean exited with code $LASTEXITCODE."
+    }
+}
 
 dotnet restore $solutionPath
 if ($LASTEXITCODE -ne 0) {
