@@ -55,17 +55,42 @@ During installation, service health may briefly report `starting` with the messa
 
 ## Control
 
-PowerShell:
+### PowerShell client
+
+Run `acer-service-control.ps1` from the `installable_service` directory. The
+script accepts command arguments rather than PowerShell named parameters.
+
+| Command | Description | Example |
+|---|---|---|
+| No arguments | Show help. | `.\acer-service-control.ps1` |
+| `help` | Show help. The aliases are `--help`, `-h`, `-help`, and `/?`. | `.\acer-service-control.ps1 help`<br>`.\acer-service-control.ps1 --help`<br>`.\acer-service-control.ps1 -h`<br>`.\acer-service-control.ps1 -help`<br>`.\acer-service-control.ps1 /?` |
+| `status` | Show the combined fan, keyboard, and profile status. | `.\acer-service-control.ps1 status` |
+| `fan status` | Show the current fan mode, targets, and readings. | `.\acer-service-control.ps1 fan status` |
+| `fan auto` | Let the firmware control both fans automatically. | `.\acer-service-control.ps1 fan auto` |
+| `fan max` | Run both fans in maximum mode. | `.\acer-service-control.ps1 fan max` |
+| `fan <CPU_PERCENT> <GPU_PERCENT>` | Set custom CPU and GPU fan targets. Each value must be an integer from `0` through `100`. | `.\acer-service-control.ps1 fan 50 60` |
+| `fan custom <CPU_PERCENT> <GPU_PERCENT>` | Explicit form of the custom fan command. | `.\acer-service-control.ps1 fan custom 50 60` |
+| `keyboard status` | Show the current static keyboard color and brightness. | `.\acer-service-control.ps1 keyboard status` |
+| `keyboard color <RRGGBB> brightness <PERCENT>` | Set a uniform six-digit RGB color and brightness from `0` through `100`. A leading `#` is accepted when the color is quoted. The `color` and `brightness` pairs may appear in either order. | `.\acer-service-control.ps1 keyboard color 0411FF brightness 50`<br>`.\acer-service-control.ps1 keyboard brightness 50 color '#0411FF'` |
+| `led ...` | Alias for every `keyboard` command. | `.\acer-service-control.ps1 led status`<br>`.\acer-service-control.ps1 led color 0411FF brightness 50` |
+| `profile status` | Show the current profile and the profiles supported by the firmware. | `.\acer-service-control.ps1 profile status` |
+| `profile next` | Switch to the next firmware-supported profile in the order Eco, Quiet, Balanced, Performance, and Turbo. | `.\acer-service-control.ps1 profile next` |
+| `profile <NAME>` | Select a profile by name. Names are case-insensitive, and availability depends on the firmware. | `.\acer-service-control.ps1 profile Eco`<br>`.\acer-service-control.ps1 profile Quiet`<br>`.\acer-service-control.ps1 profile Balanced`<br>`.\acer-service-control.ps1 profile Performance`<br>`.\acer-service-control.ps1 profile Turbo` |
+| `settings apply` | Reapply all managed settings saved by the service. | `.\acer-service-control.ps1 settings apply` |
+
+Commands, keywords, and option names may also use a `--` prefix. For example:
 
 ```powershell
-.\acer-service-control.ps1 status
-.\acer-service-control.ps1 fan 50 60
-.\acer-service-control.ps1 fan auto
-.\acer-service-control.ps1 keyboard color 0411FF brightness 50
-.\acer-service-control.ps1 profile next
+.\acer-service-control.ps1 --fan --custom 50 60
+.\acer-service-control.ps1 --keyboard --color 0411FF --brightness 50
+.\acer-service-control.ps1 --profile --next
 ```
 
-Python:
+The client reads the API token from `%ProgramData%\AcerControl\api-token` and
+connects to `http://127.0.0.1:46934` by default. Set
+`ACER_CONTROL_TOKEN_FILE` or `ACER_CONTROL_BASE_URL` to override those values.
+
+### Python client
 
 ```powershell
 py -m pip install .\clients\python
@@ -73,7 +98,7 @@ acer-service-control status
 acer-service-control fan 50 60
 ```
 
-Python API:
+### Python API
 
 ```python
 from acer_control_client import AcerControlClient

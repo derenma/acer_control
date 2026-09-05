@@ -186,7 +186,8 @@ function Invoke-ProfileCommand {
 
 $arguments = @(
     $args | ForEach-Object {
-        if ($_.StartsWith('--')) { $_.Substring(2) } else { $_ }
+        $argument = [string]$_
+        if ($argument.StartsWith('--')) { $argument.Substring(2) } else { $argument }
     }
 )
 if ($arguments.Count -eq 0 -or $arguments[0] -in @('help', '-h', '-help', '/?')) {

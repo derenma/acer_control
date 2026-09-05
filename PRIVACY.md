@@ -74,7 +74,10 @@ To block the identified external endpoints on Windows, add these entries to `C:\
 127.0.0.1 www.planet9.gg
 ```
 
-**Caution:** `firestore.googleapis.com` is a shared Google service. Blocking it system-wide may prevent other applications and websites that use Google Cloud Firestore from working correctly.
+**Caution:**
+
+- `firestore.googleapis.com` is a shared Google service. Blocking it system-wide may prevent other applications and websites that use Google Cloud Firestore from working correctly.
+- `www.planet9.gg` may support products and services that call `planet9.gg`
 
 ## Scope and Evidence
 

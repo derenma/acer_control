@@ -16,11 +16,14 @@ Names referenced by this project include:
 | Acer Incorporated | NitroSense | Acer hardware monitoring and control application |
 | Acer Incorporated | AcerSense | Acer system management application family |
 | Acer Incorporated | Predator and PredatorSense | Acer gaming product and control application names found in shared Acer components |
+| Acer Incorporated | Planet9 | Acer esports and gaming community platform |
 | Acer Incorporated | Acer Care Center | Battery, storage, and support application |
 | Acer Incorporated | Acer Quick Access | Acer hardware convenience application |
 | Acer Incorporated | Acer Experience Zone | Acer local application and service component |
 | Acer Incorporated | Acer QuickPanel and Acer Purified Voice | Acer applications detected during system analysis |
 | Acer Incorporated | AcerAgentService, AcerGamingFunction, and other Acer service/interface identifiers | Technical identifiers used for compatibility and analysis |
+
+Planet9 and its associated names, logos, services, software, and brand assets are owned by Acer Incorporated or its affiliates. References to Planet9 are solely for identifying Acer software and services; this project is not affiliated with or endorsed by Planet9.
 
 No ownership is claimed in these names, Acer binaries, Acer firmware interfaces, or Acer documentation. The project name "Acer Control" is derived from the function of the application itself: controlling supported features on compatible Acer hardware. As explained in the U.S. Copyright Office's [Circular 33, *Works Not Protected by Copyright*](https://www.copyright.gov/circs/circ33.pdf), names, titles, and short phrases are not protected by copyright. This naming explanation does not claim ownership of Acer's trademarks or imply that Acer published or approved the project.
 
