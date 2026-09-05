@@ -723,10 +723,10 @@ function Set-Profile {
         [System.Management.ManagementObject]$Gaming,
 
         [Parameter(Mandatory)]
-        [string]$Profile
+        [string]$TargetProfile
     )
 
-    $mode = [byte]$profileIds[$Profile]
+    $mode = [byte]$profileIds[$TargetProfile]
     $inputValue = [uint64]0x0B -bor ([uint64]$mode -shl 8)
     Invoke-GamingSet `
         -Gaming $Gaming `
@@ -736,7 +736,7 @@ function Set-Profile {
     Start-Sleep -Milliseconds 300
     $current = Get-CurrentProfile -Gaming $Gaming
     if ($current.ModeId -ne $mode) {
-        throw "Requested '$Profile', but firmware reports '$($current.Profile)'."
+        throw "Requested '$TargetProfile', but firmware reports '$($current.Profile)'."
     }
 
     return $current
@@ -791,7 +791,7 @@ function Invoke-ProfileCommand {
         throw "The '$requestedProfile' profile is not supported by this laptop."
     }
 
-    return Set-Profile -Gaming $Gaming -Profile $requestedProfile
+    return Set-Profile -Gaming $Gaming -TargetProfile $requestedProfile
 }
 
 function Show-CombinedStatus {
