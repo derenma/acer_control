@@ -166,7 +166,7 @@ else {
 
 Invoke-Sc @(
     'description', $serviceName,
-    'Controls Acer Nitro fan, keyboard lighting, and performance profile settings.'
+    'Controls fan, keyboard lighting, and performance profile settings.'
 )
 Invoke-Sc @(
     'failure', $serviceName,
