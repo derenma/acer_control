@@ -37,6 +37,29 @@ The following Acer user-mode services were detected on this Nitro AN17-42. A ser
 
 `AcerAirplaneModeController` is a separate kernel driver rather than a user-mode service. It handles the airplane-mode key and wireless-radio state events.
 
+## Service Startup and Restoration Behavior
+
+The following is a read-only snapshot from September 5, 2026. All 12 stock Acer user-mode services listed above were stopped and configured as disabled. Four enabled scheduled tasks still attempted to start disabled Acer services at boot or logon:
+
+| Scheduled task | Trigger and account | Action | Observed behavior |
+|---|---|---|---|
+| `AcerDeviceInfoAgentServiceDelayStart` | Boot plus 15 seconds, `SYSTEM` | `sc start AcerDeviceInfoAgentService` | Last run returned `0x422` (`ERROR_SERVICE_DISABLED`) |
+| `DelayStartCareCenter2` | Any-user logon plus 1 minute | `C:\Program Files\AcerCCAgent\Launcher.exe AcerCCAgentSvis` | Last run returned `0x422` |
+| `DelayStartDeviceInfo2` | Any-user logon plus 1 minute | `C:\Program Files\AcerDIAgent\Launcher.exe AcerDIAgentSvis` | Last run returned `0x422` |
+| `DelayStartQuickAccess2` | Any-user logon plus 1 minute | `C:\Program Files\AcerQAAgent\Launcher.exe AcerQAAgentSvis` | Last run returned `0x422` |
+
+These tasks do not re-enable or reinstall a disabled service; they only request that an existing service start. Their failure is therefore expected while the target service remains disabled. `NitroSenseLauncher` was present but disabled. The enabled `StorPSCTL` logon task starts Acer's SSD/storage utility and was not observed creating or starting an Acer service.
+
+Disabling or deleting only the service registry keys is not durable removal. Signed Acer/ULIC PnP software-component packages remain installed in the Windows Driver Store and are bound to devices on this laptop. Their INF files contain `AddService` directives that can recreate the following registrations during a driver reinstall, device re-enumeration, OEM repair, or Windows Update:
+
+- `AASSvc`, `AcerLightingService`, `AcerARTAIMMXDriverService`, `AcerARTAIMMXService`, `AcerPixyService`, `AcerDeviceEnablingServiceV2`, `AcerEZSvc`, and `AcerServiceSvc` are declared as automatic services by their installed INF packages.
+- `AcerCCAgentSvis`, `AcerDIAgentSvis`, and `AcerQAAgentSvis` are also declared as automatic services and have the logon tasks shown above.
+- `AcerDeviceInfoAgentService` is declared as demand-start and has the boot task shown above.
+
+No Acer-related entries were found in the inspected `Run`, `RunOnce`, Explorer policy-run, Active Setup, Winlogon, Session Manager, shell delayed-load, or WMI permanent-event-consumer locations. The current-user Startup shortcut installed by `nitrosense-key-task-manager.ps1` starts only the key-remapping script and contains no service creation, configuration, or start command.
+
+The repository's `AcerControlService` is separate from these stock components. Its installer deliberately registers it as a delayed automatic `LocalSystem` service so it can restore managed fan, keyboard, and performance-profile settings at startup. It does not depend on the stock Acer scheduled tasks or software-component packages.
+
 ## Dependency Legend
 
 - **WMI only** means the tool talks directly to Acer firmware through `root\wmi:AcerGamingFunction` and does not require an Acer user-mode control service or OpenRGB.
