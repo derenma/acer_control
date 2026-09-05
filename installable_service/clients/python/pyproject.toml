@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acer-control-client"
+version = "0.1.0"
+description = "Local client for the Acer Control Windows service"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+acer-service-control = "acer_control_client.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
