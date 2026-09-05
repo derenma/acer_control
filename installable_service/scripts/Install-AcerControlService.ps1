@@ -2,8 +2,7 @@
 
 <#
 PowerShell compatibility:
-- Windows PowerShell 5.1: Not supported for a clean install because token
-    generation requires a newer .NET cryptography API.
+- Windows PowerShell 5.1: Supported on Windows.
 - PowerShell 7.x: Supported on Windows.
 #>
 
@@ -126,7 +125,13 @@ Set-PathAcl -Path $installPath
 New-Item -ItemType Directory -Path $dataPath -Force | Out-Null
 if (-not (Test-Path -LiteralPath $tokenPath -PathType Leaf)) {
     $tokenBytes = [byte[]]::new(32)
-    [Security.Cryptography.RandomNumberGenerator]::Fill($tokenBytes)
+    $randomNumberGenerator = [Security.Cryptography.RandomNumberGenerator]::Create()
+    try {
+        $randomNumberGenerator.GetBytes($tokenBytes)
+    }
+    finally {
+        $randomNumberGenerator.Dispose()
+    }
     [IO.File]::WriteAllText(
         $tokenPath,
         [Convert]::ToBase64String($tokenBytes),
@@ -172,7 +177,6 @@ $service = Get-Service -Name $serviceName
 $service.WaitForStatus('Running', [TimeSpan]::FromSeconds(30))
 
 $port = (Get-ItemProperty 'HKLM:\SOFTWARE\AcerControl\Service').ApiPort
-$token = (Get-Content -LiteralPath $tokenPath -Raw).Trim()
 $deadline = [DateTime]::UtcNow.AddSeconds(30)
 do {
     try {

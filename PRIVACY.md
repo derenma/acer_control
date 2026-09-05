@@ -61,6 +61,21 @@ These observed endpoints are local IPC and do not, by themselves, send data to A
 
 The custom `AcerControlService` in this repository is also local-only. It listens on `127.0.0.1:46934` and contains no cloud endpoint or outbound telemetry implementation.
 
+## Windows Hosts File
+
+To block the identified external endpoints on Windows, add these entries to `C:\Windows\System32\drivers\etc\hosts` from an administrator account:
+
+```text
+127.0.0.1 backend-prd-imub2p4wyq-uc.a.run.app
+127.0.0.1 device-info-prd-imub2p4wyq-uc.a.run.app
+127.0.0.1 hola.acer.com
+127.0.0.1 holadev.acer.com
+127.0.0.1 firestore.googleapis.com
+127.0.0.1 www.planet9.gg
+```
+
+**Caution:** `firestore.googleapis.com` is a shared Google service. Blocking it system-wide may prevent other applications and websites that use Google Cloud Firestore from working correctly.
+
 ## Scope and Evidence
 
 - Confirmed routes are a verified minimum for the installed versions. Conditional application paths mean this is not proof that no other stock Acer version or feature can contact additional endpoints.

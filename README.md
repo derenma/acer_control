@@ -47,10 +47,11 @@ Set-Location .\installable_service
 The publish script runs the .NET tests and creates a self-contained `win-x64`
 build under `artifacts\publish\AcerControlService`.
 
-Run the clean installer from an elevated PowerShell 7 session:
+Run the clean installer from an elevated Windows PowerShell 5.1 or PowerShell
+7 session:
 
 ```powershell
-pwsh -File .\scripts\Install-AcerControlService.ps1
+.\scripts\Install-AcerControlService.ps1
 ```
 
 Control the installed service without elevation under the default ACLs:
