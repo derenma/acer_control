@@ -1,9 +1,14 @@
 # Acer Control
 
-Windows tools for controlling and investigating supported Acer Nitro laptop
-hardware. The project can manage fan targets, static keyboard lighting, and
-performance profiles either directly through Acer's WMI firmware interface or
-through an installable local service.
+Acer Control is an open-source Windows toolkit for controlling and investigating
+supported Acer Nitro laptops. It provides PowerShell command-line tools and an
+installable .NET Windows service for CPU and GPU fan control and monitoring,
+static RGB keyboard lighting, and performance profile management.
+
+The tools communicate with Acer's `AcerGamingFunction` WMI firmware interface
+and local services used by NitroSense. The repository also includes Acer service
+enumeration, privacy and network analysis, and experimental NitroSense key
+remapping. Tested and built on an Acer Nitro AN17-42.
 
 > [!CAUTION]
 > These tools write model-specific firmware settings. Incorrect fan or profile
@@ -15,8 +20,6 @@ This is an independent project and is not affiliated with or endorsed by Acer.
 See [MANUFACTURER.md](MANUFACTURER.md) for attribution details.
 
 ## Compatibility
-
-Tested and built on: Acer AN17-42
 
 General compatability with other Acer hardware is unknown as these tools were
 built and run on personal equipment with other OS customizations. Github issue
